@@ -3,8 +3,10 @@ package main
 import (
 	"context"
 	"flag"
+	"fmt"
 	"log"
 	"net"
+	"time"
 
 	sq "github.com/Masterminds/squirrel"
 	"github.com/Sysleec/chat-server/internal/config"
@@ -14,6 +16,7 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
 	"google.golang.org/protobuf/types/known/emptypb"
+	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 var configPath string
@@ -28,10 +31,12 @@ type server struct {
 }
 
 func (s *server) CreateChat(ctx context.Context, in *emptypb.Empty) (*desc.CreateChatResponse, error) {
-	builderInsert := sq.Insert("chats").Suffix("RETURNING id")
-	query, args, err := builderInsert.ToSql()
+	// Create chat with default values
+	query, args, err := sq.Insert("chats").Columns("id", "created_at").
+		Values(sq.Expr("DEFAULT"), sq.Expr("DEFAULT")).
+		Suffix("RETURNING id").ToSql()
 	if err != nil {
-		log.Fatalf("failed to build query: %v", err)
+		return nil, fmt.Errorf("failed to inser query: %v", err)
 	}
 
 	var id int64
@@ -42,6 +47,35 @@ func (s *server) CreateChat(ctx context.Context, in *emptypb.Empty) (*desc.Creat
 	log.Printf("inserted chat with id: %v", id)
 
 	return &desc.CreateChatResponse{ChatId: &desc.Chat{ChatId: id}}, nil
+}
+
+func (s *server) GetChats(ctx context.Context, in *emptypb.Empty) (*desc.GetChatsResponse, error) {
+	query, args, err := sq.Select("id", "created_at").From("chats").ToSql()
+	if err != nil {
+		return nil, fmt.Errorf("failed to select query: %v", err)
+	}
+
+	rows, err := s.pool.Query(ctx, query, args...)
+	if err != nil {
+		return nil, fmt.Errorf("failed to select chats: %v", err)
+	}
+	defer rows.Close()
+
+	var chats []*desc.ChatWithTime
+	for rows.Next() {
+		chat := &desc.ChatWithTime{}
+		chat.ChatId = &desc.Chat{}
+		var timestamp time.Time
+		err := rows.Scan(&chat.ChatId.ChatId, &timestamp)
+		if err != nil {
+			log.Println(err)
+			return nil, fmt.Errorf("failed to scan chat: %v", err)
+		}
+		chat.Timestamp = timestamppb.New(timestamp)
+		chats = append(chats, chat)
+	}
+
+	return &desc.GetChatsResponse{Chats: chats}, nil
 }
 
 func main() {
