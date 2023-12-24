@@ -12,6 +12,7 @@ service ChatV1 {
   rpc ConnectChat(ConnectChatRequest) returns (stream Message);
   rpc DeleteChat(DeleteChatRequest) returns (google.protobuf.Empty);
   rpc SendMessage(SendMessageRequest) returns (google.protobuf.Empty);
+  rpc GetChats(google.protobuf.Empty) returns (GetChatsResponse);
 }
 
 message Message{
@@ -20,20 +21,29 @@ message Message{
   google.protobuf.Timestamp timestamp = 3;
 }
 
-message CreateChatResponse {
+message Chat{
   int64 chat_id = 1;
+}
+
+message CreateChatResponse {
+  Chat chat_id = 1;
 }
 
 message DeleteChatRequest {
-  int64 chat_id = 1;
+  Chat chat_id = 1;
 }
 
 message ConnectChatRequest {
-  int64 chat_id = 1;
+  Chat chat_id = 1;
   string username = 2;
 }
 
 message SendMessageRequest {
-  string chat_id = 1;
+  Chat chat_id = 1;
   Message message = 2;
 }
+
+message GetChatsResponse {
+  repeated Chat chats = 1;
+}
+
