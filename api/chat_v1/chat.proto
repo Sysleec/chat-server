@@ -25,11 +25,6 @@ message Chat{
   int64 chat_id = 1;
 }
 
-message ChatWithTime{
-  Chat chat_id = 1;
-  google.protobuf.Timestamp timestamp = 2;
-}
-
 message CreateChatResponse {
   Chat chat_id = 1;
 }
@@ -49,6 +44,6 @@ message SendMessageRequest {
 }
 
 message GetChatsResponse {
-  repeated ChatWithTime chats = 1;
+  repeated Chat chats = 1;
 }
 

@@ -59,7 +59,7 @@ jobs:
             # Set up variables
             TAG_NAME=$(echo $GITHUB_SHA | head -c7)
             
-            # Login into Selectel Registry
+            # Login into Registry
             docker login -u ${{ secrets.REGISTRY_USERNAME }} -p ${{ secrets.REGISTRY_PASSWORD }} $REGISTRY
             
             # Stop running container
