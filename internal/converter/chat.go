@@ -8,13 +8,25 @@ import (
 func ToChatsFromService(chats []model.Chat) *desc.GetChatsResponse {
 	resp := &desc.GetChatsResponse{}
 	for _, chat := range chats {
-		resp.Chats = append(resp.Chats, ToChatFromService(chat))
+		resp.Chats = append(resp.Chats, ToChat(chat))
 	}
 	return resp
 }
 
-func ToChatFromService(chat model.Chat) *desc.Chat {
+func ToChat(chat model.Chat) *desc.Chat {
 	return &desc.Chat{
 		ChatId: chat.ID,
+	}
+}
+
+func ToChatFromService(chat *model.Chat) *desc.GetChatResponse {
+	return &desc.GetChatResponse{
+		Chat: ToChat(*chat),
+	}
+}
+
+func ToChatFromRepo(chat *desc.Chat) *model.Chat {
+	return &model.Chat{
+		ID: chat.ChatId,
 	}
 }

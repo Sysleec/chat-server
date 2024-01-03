@@ -6,16 +6,15 @@ import (
 
 	"github.com/Sysleec/chat-server/internal/converter"
 	desc "github.com/Sysleec/chat-server/pkg/chat_v1"
-	"google.golang.org/protobuf/types/known/emptypb"
 )
 
-func (s *Server) GetChats(ctx context.Context, req *emptypb.Empty) (*desc.GetChatsResponse, error) {
-	user, err := s.chatService.GetChats(ctx, req)
+func (s *Server) GetChat(ctx context.Context, req *desc.GetChatRequest) (*desc.GetChatResponse, error) {
+	chat, err := s.chatService.GetChat(ctx, req.GetChatId())
 	if err != nil {
 		return nil, err
 	}
 
-	fmt.Printf("got users: %+v\n", user)
+	fmt.Printf("got chat: %+v\n", chat)
 
-	return converter.ToChatsFromService(user), nil
+	return converter.ToChatFromService(chat), nil
 }

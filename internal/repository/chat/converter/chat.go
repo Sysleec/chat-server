@@ -8,14 +8,16 @@ import (
 func ToChatsFromRepo(repo []modelRepo.Chat) []model.Chat {
 	chats := make([]model.Chat, len(repo))
 	for i, chat := range repo {
-		chats[i] = ToChatFromRepo(chat)
+		chats[i] = model.Chat{
+			ID: chat.ID,
+		}
 	}
 	return chats
 
 }
 
-func ToChatFromRepo(repo modelRepo.Chat) model.Chat {
-	return model.Chat{
+func ToChatFromRepo(repo modelRepo.Chat) *model.Chat {
+	return &model.Chat{
 		ID: repo.ID,
 	}
 }

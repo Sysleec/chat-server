@@ -9,5 +9,7 @@ import (
 
 type ChatService interface {
 	CreateChat(ctx context.Context, _ *emptypb.Empty) (int64, error)
+	GetChat(ctx context.Context, id int64) (*model.Chat, error)
 	GetChats(ctx context.Context, _ *emptypb.Empty) ([]model.Chat, error)
+	DeleteChat(ctx context.Context, cht *model.Chat) (*emptypb.Empty, error)
 }

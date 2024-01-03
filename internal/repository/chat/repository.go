@@ -73,3 +73,42 @@ func (r *repo) GetChats(ctx context.Context, in *emptypb.Empty) ([]model.Chat, e
 
 	return converter.ToChatsFromRepo(chats), nil
 }
+
+func (r *repo) GetChat(ctx context.Context, id int64) (*model.Chat, error) {
+	query, args, err := sq.Select(idColumn, createdAtColumn).From(tableName).PlaceholderFormat(sq.Dollar).Where(sq.Eq{idColumn: id}).ToSql()
+	if err != nil {
+		return nil, fmt.Errorf("failed to select query: %v", err)
+	}
+
+	q := db.Query{
+		Name:     "chat_repository.Get_chat",
+		QueryRaw: query,
+	}
+
+	var chat modelRepo.Chat
+	err = r.db.DB().ScanOneContext(ctx, &chat, q, args...)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get chat: %v", err)
+	}
+
+	return converter.ToChatFromRepo(chat), nil
+}
+
+func (r *repo) DeleteChat(ctx context.Context, cht *model.Chat) (*emptypb.Empty, error) {
+	query, args, err := sq.Delete(tableName).PlaceholderFormat(sq.Dollar).Where(sq.Eq{idColumn: cht.ID}).ToSql()
+	if err != nil {
+		return nil, fmt.Errorf("failed to delete query: %v", err)
+	}
+
+	q := db.Query{
+		Name:     "chat_repository.Delete_chat",
+		QueryRaw: query,
+	}
+
+	_, err = r.db.DB().ExecContext(ctx, q, args...)
+	if err != nil {
+		return nil, fmt.Errorf("failed to delete chat: %v", err)
+	}
+
+	return &emptypb.Empty{}, nil
+}

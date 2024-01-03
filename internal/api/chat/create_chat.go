@@ -14,6 +14,6 @@ func (s *Server) CreateChat(ctx context.Context, req *emptypb.Empty) (*desc.Crea
 	}
 
 	return &desc.CreateChatResponse{
-		ChatId: &desc.Chat{ChatId: id},
+		Chat: &desc.Chat{ChatId: id},
 	}, nil
 }
