@@ -10,7 +10,7 @@
 .idea
 .vscode
 /bin
-*.env
+Chat_serv.session.sql
 
 # Test binary, built with `go test -c`
 *.test
