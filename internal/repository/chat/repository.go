@@ -29,7 +29,7 @@ func NewRepo(db db.Client) repository.ChatRepository {
 	return &repo{db: db}
 }
 
-func (r *repo) CreateChat(ctx context.Context, _ *emptypb.Empty) (int64, error) {
+func (r *repo) CreateChat(ctx context.Context, req *emptypb.Empty) (int64, error) {
 	// Create chat with default values
 	query, args, err := sq.Insert(tableName).Columns(idColumn, createdAtColumn).
 		Values(sq.Expr("DEFAULT"), sq.Expr("DEFAULT")).
@@ -54,7 +54,7 @@ func (r *repo) CreateChat(ctx context.Context, _ *emptypb.Empty) (int64, error) 
 }
 
 // GetChats returns all chats
-func (r *repo) GetChats(ctx context.Context, _ *emptypb.Empty) ([]model.Chat, error) {
+func (r *repo) GetChats(ctx context.Context, req *emptypb.Empty) ([]model.Chat, error) {
 	query, args, err := sq.Select(idColumn, createdAtColumn).From(tableName).ToSql()
 	if err != nil {
 		return nil, fmt.Errorf("failed to select query: %v", err)

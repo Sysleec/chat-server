@@ -3,10 +3,10 @@ package chat
 import (
 	"github.com/Sysleec/chat-server/internal/client/db"
 	"github.com/Sysleec/chat-server/internal/repository"
-	def "github.com/Sysleec/chat-server/internal/service"
+	"github.com/Sysleec/chat-server/internal/service"
 )
 
-var _ def.ChatService = (*serv)(nil)
+var _ service.ChatService = (*serv)(nil)
 
 type serv struct {
 	chatRepo  repository.ChatRepository
@@ -20,4 +20,28 @@ func NewService(chatRepo repository.ChatRepository,
 		chatRepo:  chatRepo,
 		txManager: txManager,
 	}
+}
+
+func NewMockService(deps ...interface{}) service.ChatService {
+	srv := serv{}
+
+	for _, v := range deps {
+		switch s := v.(type) {
+		case repository.ChatRepository:
+			srv.chatRepo = s
+		}
+	}
+	return &srv
+}
+
+func NewMockTxService(deps ...interface{}) *serv {
+	srv := serv{}
+
+	for _, v := range deps {
+		switch s := v.(type) {
+		case serv:
+			srv = s
+		}
+	}
+	return &srv
 }
