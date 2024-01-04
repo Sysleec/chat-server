@@ -54,7 +54,7 @@ func (r *repo) CreateChat(ctx context.Context, _ *emptypb.Empty) (int64, error) 
 }
 
 // GetChats returns all chats
-func (r *repo) GetChats(ctx context.Context, in *emptypb.Empty) ([]model.Chat, error) {
+func (r *repo) GetChats(ctx context.Context, _ *emptypb.Empty) ([]model.Chat, error) {
 	query, args, err := sq.Select(idColumn, createdAtColumn).From(tableName).ToSql()
 	if err != nil {
 		return nil, fmt.Errorf("failed to select query: %v", err)
