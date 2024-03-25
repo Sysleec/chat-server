@@ -29,6 +29,8 @@ type ChatV1Client interface {
 	SendMessage(ctx context.Context, in *SendMessageRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	GetChat(ctx context.Context, in *GetChatRequest, opts ...grpc.CallOption) (*GetChatResponse, error)
 	GetChats(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*GetChatsResponse, error)
+	GetName(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*GetNameResponse, error)
+	Create(ctx context.Context, in *CreateRequest, opts ...grpc.CallOption) (*CreateResponse, error)
 }
 
 type chatV1Client struct {
@@ -116,6 +118,24 @@ func (c *chatV1Client) GetChats(ctx context.Context, in *emptypb.Empty, opts ...
 	return out, nil
 }
 
+func (c *chatV1Client) GetName(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*GetNameResponse, error) {
+	out := new(GetNameResponse)
+	err := c.cc.Invoke(ctx, "/chat_v1.ChatV1/GetName", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *chatV1Client) Create(ctx context.Context, in *CreateRequest, opts ...grpc.CallOption) (*CreateResponse, error) {
+	out := new(CreateResponse)
+	err := c.cc.Invoke(ctx, "/chat_v1.ChatV1/Create", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // ChatV1Server is the server API for ChatV1 service.
 // All implementations must embed UnimplementedChatV1Server
 // for forward compatibility
@@ -126,6 +146,8 @@ type ChatV1Server interface {
 	SendMessage(context.Context, *SendMessageRequest) (*emptypb.Empty, error)
 	GetChat(context.Context, *GetChatRequest) (*GetChatResponse, error)
 	GetChats(context.Context, *emptypb.Empty) (*GetChatsResponse, error)
+	GetName(context.Context, *emptypb.Empty) (*GetNameResponse, error)
+	Create(context.Context, *CreateRequest) (*CreateResponse, error)
 	mustEmbedUnimplementedChatV1Server()
 }
 
@@ -150,6 +172,12 @@ func (UnimplementedChatV1Server) GetChat(context.Context, *GetChatRequest) (*Get
 }
 func (UnimplementedChatV1Server) GetChats(context.Context, *emptypb.Empty) (*GetChatsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetChats not implemented")
+}
+func (UnimplementedChatV1Server) GetName(context.Context, *emptypb.Empty) (*GetNameResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetName not implemented")
+}
+func (UnimplementedChatV1Server) Create(context.Context, *CreateRequest) (*CreateResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Create not implemented")
 }
 func (UnimplementedChatV1Server) mustEmbedUnimplementedChatV1Server() {}
 
@@ -275,6 +303,42 @@ func _ChatV1_GetChats_Handler(srv interface{}, ctx context.Context, dec func(int
 	return interceptor(ctx, in, info, handler)
 }
 
+func _ChatV1_GetName_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(emptypb.Empty)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ChatV1Server).GetName(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/chat_v1.ChatV1/GetName",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ChatV1Server).GetName(ctx, req.(*emptypb.Empty))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ChatV1_Create_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CreateRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ChatV1Server).Create(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/chat_v1.ChatV1/Create",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ChatV1Server).Create(ctx, req.(*CreateRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // ChatV1_ServiceDesc is the grpc.ServiceDesc for ChatV1 service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -301,6 +365,14 @@ var ChatV1_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetChats",
 			Handler:    _ChatV1_GetChats_Handler,
+		},
+		{
+			MethodName: "GetName",
+			Handler:    _ChatV1_GetName_Handler,
+		},
+		{
+			MethodName: "Create",
+			Handler:    _ChatV1_Create_Handler,
 		},
 	},
 	Streams: []grpc.StreamDesc{

@@ -12,4 +12,6 @@ type ChatService interface {
 	GetChat(ctx context.Context, id int64) (*model.Chat, error)
 	GetChats(ctx context.Context, in *emptypb.Empty) ([]model.Chat, error)
 	DeleteChat(ctx context.Context, cht *model.Chat) (*emptypb.Empty, error)
+	GetName(context.Context) (string, error)
+	Create(context.Context, *model.Chat) (int64, error)
 }

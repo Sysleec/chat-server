@@ -30,3 +30,12 @@ func ToChatFromRepo(chat *desc.Chat) *model.Chat {
 		ID: chat.ChatId,
 	}
 }
+
+func ToChatFromDescCreate(chat *desc.CreateRequest) *model.Chat {
+	return &model.Chat{
+		ID:       0,
+		Username: chat.GetUsername(),
+		Password: chat.GetPassword(),
+		Email:    chat.GetEmail(),
+	}
+}

@@ -14,6 +14,8 @@ service ChatV1 {
   rpc SendMessage(SendMessageRequest) returns (google.protobuf.Empty);
   rpc GetChat(GetChatRequest) returns (GetChatResponse);
   rpc GetChats(google.protobuf.Empty) returns (GetChatsResponse);
+  rpc GetName(google.protobuf.Empty) returns(GetNameResponse);
+  rpc Create(CreateRequest) returns (CreateResponse);
 }
 
 message Message{
@@ -56,3 +58,16 @@ message GetChatsResponse {
   repeated Chat chats = 1;
 }
 
+message GetNameResponse{
+  string name = 1;
+}
+
+message CreateRequest{
+  string username = 1;
+  string password = 2;
+  string email = 3;
+}
+
+message CreateResponse{
+  int64 id = 1;
+}
